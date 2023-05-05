@@ -1,0 +1,76 @@
+<head>
+<title>Link Shortener</title>
+</head>
+<style>
+body{
+    margin: 0;
+    padding: 0;
+    background: #8a8a8a;
+    font-family: Arial, Helvetica, sans-serif;
+}
+div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+input{
+    width: 200px;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 0 10px;
+    margin: 0 10px;
+    outline: none;
+}
+
+button{
+    width: 100%;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #ccc;
+    cursor: pointer;
+}
+h1, p{
+text-align: center;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+@media only screen and (max-width: 900px) {
+#s, #u{
+    width: 100%;
+    margin-top: 10px;
+}
+}
+</style>
+
+<div>
+    <h1>Link Shortener</h1>
+    <input id="s" name="slug" placeholder="Slug"><input id="u" type="url" name="url" placeholder="Redirect to"> 
+    <p>Remove after <input name="max_visits" style="width: 10%;margin: 1px;"> visits.</p>
+    <button>Create</button>
+</div>
+<script>
+if(new URLSearchParams(window.location.search).has("message")) alert(new URLSearchParams(window.location.search).get("message"))
+
+document.querySelector("button").onclick = () => {
+    if(!document.querySelector("input[name='slug']").value) return alert("Slug is required")
+    if(!document.querySelector("input[name='url']").value) return alert("URL is required")
+    if(!document.querySelector("input[name='max_visits']").value) document.querySelector("input[name='max_visits']").value = `0`
+    if(isNaN(document.querySelector("input[name='max_visits']").value)) return alert("Max visits must be a number")
+    if(document.querySelector("input[name='max_visits']").value > 1000) return alert("Max visits must be less than 1000")
+   fetch('$ENDPOINT$', { method: 'POST', headers:{
+         slug: document.querySelector("input[name='slug']").value,
+         url: document.querySelector("input[name='url']").value,
+         max_visits: document.querySelector("input[name='max_visits']").value
+   } }).then(res => res.json()).then(res => {
+       if(res.error) return alert(res.error)
+       alert("Added")
+       window.location.href = "/"
+   })
+}
+
+document.getElementById('s').value = location.pathname.replace('/', '')
+</script>
